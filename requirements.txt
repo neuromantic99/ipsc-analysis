@@ -1,0 +1,7 @@
+mypy
+black
+numpy
+aicspylibczi
+aicsimageio
+suite2p
+
