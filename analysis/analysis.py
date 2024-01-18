@@ -9,28 +9,26 @@ from suite2p.run_s2p import run_s2p
 HERE = Path(__file__).parent
 
 
-path = Path("/Users/jamesrowland/Documents/data/DG-TauKO/KOLF-Experiment-1074.czi")
+# path = Path("/Users/jamesrowland/Documents/data/DG-TauKO/KOLF-Experiment-1074.czi")
+path = Path("/Volumes/MarcBusche/Francesca/CD7/DG TauKO/Day 1/TauKO.czi")
 
-# CziReader(image=path)
 img = AICSImage(path)  # selects the first scene found
 
-# Set further scenes
-img.set_scene(1)
+for idx, scene in enumerate(img.scenes):
+    img.set_scene(idx)
+    data = img.data.squeeze().astype("float32")
 
+    tiff_path = HERE / path.stem / img.current_scene / "data.tiff"
 
-data = img.data.squeeze().astype("float32")
+    tiff_path.parent.mkdir(exist_ok=True, parents=True)
 
-tiff_path = HERE / path.stem / img.current_scene / f"data.tiff"
+    tifffile.imsave(tiff_path, data)
+    save_folder = str(tiff_path.resolve().parent)
 
-tiff_path.parent.mkdir(exist_ok=True, parents=True)
-
-tifffile.imsave(tiff_path, data)
-save_folder = str(tiff_path.resolve().parent)
-
-run_s2p(
-    ops={**get_ipsc_ops(), **{"save_path0": save_folder}},
-    db={"data_path": [save_folder]},
-)
+    run_s2p(
+        ops={**get_ipsc_ops(), **{"save_path0": save_folder}},
+        db={"data_path": [save_folder]},
+    )
 
 
 # plt.figure(figsize=(16, 16))
